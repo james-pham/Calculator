@@ -10,12 +10,13 @@ using namespace std;
 struct Node {
 	int operand;
 	string operation;
-	Node* nextPtr;
+	Node* nextPtr = nullptr;
 };
 
 class Calculator {
 private:
 	Node* head;
+	bool validInput = false;
 public:
 	Calculator() {
 		head = nullptr;
@@ -23,7 +24,7 @@ public:
 
 	string getInput();
 	void buildList(string);
-	void appendNode(Node*);
+	//void appendNode(Node*);
 };
 
 string Calculator::getInput() {
@@ -44,14 +45,36 @@ void Calculator::buildList(string expression) {
 		{
 			Node* newNode = new Node;
 			newNode->operand = stoi(holder);
+			if (!head)
+			{
+				currentNode = newNode;
+			}
+			else
+			{
+				currentNode->nextPtr = newNode;
+				currentNode = currentNode->nextPtr;
+			}
 		}
 		else
 		{
-			currentNode->operation = holder;
+			if (holder == "*" || holder == "/" || holder == "+" || holder == "-")
+			{
+				currentNode->operation = holder;
+			}
+			else
+			{
+				cout << "\nInvalid input.\n";
+				validInput = false;
+				break;
+			}
+			currentNode->nextPtr = nullptr;
 		}
+		counter++;
 	}
+	return;
 }
 
+/*
 void Calculator::appendNode(Node* newNode)
 {
 	Node* nodePtr;
@@ -63,4 +86,5 @@ void Calculator::appendNode(Node* newNode)
 	newNode->nextPtr = nullptr;
 	return;
 }
+*/
 #endif // !CALCULATOR_H
