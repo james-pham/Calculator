@@ -24,6 +24,11 @@ public:
 
 	string getInput();
 	void buildList(string);
+	void calculateList();
+	int multiply(int, int);
+	int divide(int, int);
+	int add(int, int);
+	int subtract(int, int);
 	//void appendNode(Node*);
 };
 
@@ -40,19 +45,29 @@ void Calculator::buildList(string expression) {
 	istringstream parser(expression);
 	Node* currentNode;
 	currentNode = head;
+	bool integerCheck;
 	while (parser >> holder) {
 		if (counter % 2 == 0)
 		{
 			Node* newNode = new Node;
-			newNode->operand = stoi(holder);
-			if (!head)
+			integerCheck = (holder.find_first_not_of("0123456789") == string::npos);
+			if (integerCheck)
 			{
-				currentNode = newNode;
+				newNode->operand = stoi(holder);
+				if (!head)
+				{
+					currentNode = newNode;
+				}
+				else
+				{
+					currentNode->nextPtr = newNode;
+					currentNode = currentNode->nextPtr;
+				}
 			}
 			else
 			{
-				currentNode->nextPtr = newNode;
-				currentNode = currentNode->nextPtr;
+				cout << "\nInvalid entry.\n";
+				break;
 			}
 		}
 		else
@@ -72,6 +87,65 @@ void Calculator::buildList(string expression) {
 		counter++;
 	}
 	return;
+}
+
+void Calculator::calculateList() {
+	Node* nodePtr;
+	Node* nextNode;
+	nodePtr = head;
+	while (nodePtr->nextPtr)
+	{
+		nextNode = nodePtr->nextPtr;
+		if (nodePtr->operation == "*")
+		{
+			nodePtr->operand = multiply(nodePtr->operand, nextNode->operand);
+			nodePtr->operation = nextNode->operation;
+			nodePtr->nextPtr = nextNode->nextPtr;
+			delete(nextNode);
+		}
+		else if (nodePtr->operation == "/")
+		{
+			if (nextNode->operand == 0)
+			{
+				cout << "\nDivision by 0 is not possible.\n";
+				break;
+			}
+			nodePtr->operand = divide(nodePtr->operand, nextNode->operand);
+			nodePtr->operation = nextNode->operation;
+			nodePtr->nextPtr = nextNode->nextPtr;
+			delete(nextNode);
+		}
+		else if (nodePtr->operation == "+")
+		{
+			nodePtr->operand = add(nodePtr->operand, nextNode->operand);
+			nodePtr->operation = nextNode->operation;
+			nodePtr->nextPtr = nextNode->nextPtr;
+			delete(nextNode);
+		}
+		else if (nodePtr->operation == "-")
+		{
+			nodePtr->operand = multiply(nodePtr->operand, nextNode->operand);
+			nodePtr->operation = nextNode->operation;
+			nodePtr->nextPtr = nextNode->nextPtr;
+			delete(nextNode);
+		}
+	}
+}
+
+int Calculator::multiply(int num1, int num2) {
+	return num1 * num2;
+}
+
+int Calculator::divide(int num1, int num2) {
+	return num1 / num2;
+}
+
+int Calculator::add(int num1, int num2) {
+	return num1 + num2;
+}
+
+int Calculator::subtract(int num1, int num2) {
+	return num1 - num2;
 }
 
 /*
