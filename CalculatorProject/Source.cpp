@@ -12,7 +12,10 @@ int main()
 		cout << "\nEnter 'yes' to continue or 'no' to exit.\n";
 		getline(cin, continuation);
 		if (continuation == "yes")
+		{
 			flag = true;
+			calculate.deleteList();
+		}
 		else if (continuation == "no")
 			flag = false;
 		else
