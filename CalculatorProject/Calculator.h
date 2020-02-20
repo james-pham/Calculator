@@ -3,7 +3,7 @@
 
 #include <string>
 #include <iostream>
-#include <stringstream>
+#include <sstream>
 
 using namespace std;
 
@@ -23,7 +23,7 @@ public:
 
 	string getInput();
 	void buildList(string);
-	void appendNode(Node*)
+	void appendNode(Node*);
 };
 
 string Calculator::getInput() {
@@ -34,20 +34,20 @@ string Calculator::getInput() {
 }
 
 void Calculator::buildList(string expression) {
-	string holder;
 	int counter = 0;
-	stringstream parser(expression)
-	{
-		while (expression >> holder) {
-			if (counter % 2 == 0)
-			{
-				Node* newNode = new Node;
-				newNode->operand = stoi(holder);
-			}
-			else
-			{
-
-			}
+	string holder;
+	istringstream parser(expression);
+	Node* currentNode;
+	currentNode = head;
+	while (parser >> holder) {
+		if (counter % 2 == 0)
+		{
+			Node* newNode = new Node;
+			newNode->operand = stoi(holder);
+		}
+		else
+		{
+			currentNode->operation = holder;
 		}
 	}
 }
@@ -56,11 +56,11 @@ void Calculator::appendNode(Node* newNode)
 {
 	Node* nodePtr;
 	nodePtr = head;
-	while (nodePtr->next) {
-		nodePtr = nodePtr->next;
+	while (nodePtr->nextPtr) {
+		nodePtr = nodePtr->nextPtr;
 	}
-	nodePtr->next = newNode;
-	newNode->next = nullptr;
+	nodePtr->nextPtr = newNode;
+	newNode->nextPtr = nullptr;
 	return;
 }
 #endif // !CALCULATOR_H
