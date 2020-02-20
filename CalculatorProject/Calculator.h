@@ -32,6 +32,7 @@ public:
 	//void appendNode(Node*);
 };
 
+//This function reads line input by user
 string Calculator::getInput() {
 	string expression;
 	cout << "\nPlease enter expression(s) to be evaluated with spaces in between. Enter 0 to exit." << endl;
@@ -39,12 +40,12 @@ string Calculator::getInput() {
 	return expression;
 }
 
+//This function initializes and parses the string in order to build linked list to hold integers and operations. Also performs error checking for invalid characters
 void Calculator::buildList(string expression) {
 	int counter = 0;
 	string holder;
 	istringstream parser(expression);
 	Node* currentNode;
-	currentNode = head;
 	bool integerCheck;
 	while (parser >> holder) {
 		if (counter % 2 == 0)
@@ -56,12 +57,14 @@ void Calculator::buildList(string expression) {
 				newNode->operand = stoi(holder);
 				if (!head)
 				{
-					currentNode = newNode;
+					head = newNode;
 				}
 				else
 				{
+					currentNode = head;
+					while (currentNode->nextPtr)
+						currentNode = currentNode->nextPtr;
 					currentNode->nextPtr = newNode;
-					currentNode = currentNode->nextPtr;
 				}
 			}
 			else
@@ -72,6 +75,9 @@ void Calculator::buildList(string expression) {
 		}
 		else
 		{
+			currentNode = head;
+			while (currentNode->nextPtr)
+				currentNode = currentNode->nextPtr;
 			if (holder == "*" || holder == "/" || holder == "+" || holder == "-")
 			{
 				currentNode->operation = holder;
@@ -89,47 +95,65 @@ void Calculator::buildList(string expression) {
 	return;
 }
 
+//This function goes through and selects operations to perform
 void Calculator::calculateList() {
 	Node* nodePtr;
 	Node* nextNode;
 	nodePtr = head;
-	while (nodePtr->nextPtr)
+	if (!head)
 	{
-		nextNode = nodePtr->nextPtr;
-		if (nodePtr->operation == "*")
+		cout << "\nThe list is empty.\n";
+	}
+	else
+	{
+		while (nodePtr->nextPtr)
 		{
-			nodePtr->operand = multiply(nodePtr->operand, nextNode->operand);
-			nodePtr->operation = nextNode->operation;
-			nodePtr->nextPtr = nextNode->nextPtr;
-			delete(nextNode);
-		}
-		else if (nodePtr->operation == "/")
-		{
-			if (nextNode->operand == 0)
+			
+			nextNode = nodePtr->nextPtr;
+			if (nodePtr->operation == "*")
 			{
-				cout << "\nDivision by 0 is not possible.\n";
-				break;
+				nodePtr->operand = multiply(nodePtr->operand, nextNode->operand);
+				nodePtr->operation = nextNode->operation;
+				nodePtr->nextPtr = nextNode->nextPtr;
+				delete(nextNode);
 			}
-			nodePtr->operand = divide(nodePtr->operand, nextNode->operand);
-			nodePtr->operation = nextNode->operation;
-			nodePtr->nextPtr = nextNode->nextPtr;
-			delete(nextNode);
+			else if (nodePtr->operation == "/")
+			{
+				if (nextNode->operand == 0)
+				{
+					cout << "\nDivision by 0 is not possible.\n";
+					break;
+				}
+				nodePtr->operand = divide(nodePtr->operand, nextNode->operand);
+				nodePtr->operation = nextNode->operation;
+				nodePtr->nextPtr = nextNode->nextPtr;
+				delete(nextNode);
+			}
+			else
+				nodePtr = nodePtr->nextPtr;
 		}
-		else if (nodePtr->operation == "+")
+		nodePtr = head;
+		while(nodePtr->nextPtr)
 		{
-			nodePtr->operand = add(nodePtr->operand, nextNode->operand);
-			nodePtr->operation = nextNode->operation;
-			nodePtr->nextPtr = nextNode->nextPtr;
-			delete(nextNode);
-		}
-		else if (nodePtr->operation == "-")
-		{
-			nodePtr->operand = multiply(nodePtr->operand, nextNode->operand);
-			nodePtr->operation = nextNode->operation;
-			nodePtr->nextPtr = nextNode->nextPtr;
-			delete(nextNode);
+			nextNode = nodePtr->nextPtr;
+			if (nodePtr->operation == "+")
+			{
+				nodePtr->operand = add(nodePtr->operand, nextNode->operand);
+				nodePtr->operation = nextNode->operation;
+				nodePtr->nextPtr = nextNode->nextPtr;
+				delete(nextNode);
+			}
+			else if (nodePtr->operation == "-")
+			{
+				nodePtr->operand = subtract(nodePtr->operand, nextNode->operand);
+				nodePtr->operation = nextNode->operation;
+				nodePtr->nextPtr = nextNode->nextPtr;
+				delete(nextNode);
+			}
 		}
 	}
+	cout << "\nThe result is: " << nodePtr->operand << endl << endl;
+
 }
 
 int Calculator::multiply(int num1, int num2) {
